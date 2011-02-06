@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Snake Game</title>
+		<script type="text/javascript" src="Event.js"></script>
+        <script type="text/javascript" src="Snake.js"></script>
+	</head>
+	<body>
+		<style type="text/css">
+			
+			#field {
+				background-color:#8FABBD;
+				border:3px solid #5C554B;
+			}
+			
+			#left, #right {
+				float:left;
+				width:456px;
+			}
+			
+			#right {
+				margin-left:20px;		
+			}
+			
+			.info {
+				margin-top:20px;
+			}
+			
+			.info .title {
+				font-size:1.2em;
+			}
+			
+			#score {
+				margin-bottom:1.6em;
+			}
+			
+			.result {
+				color:#F09502;
+				padding-left:10px;
+				line-height:1.5em;
+			}
+		
+		</style>
+		<div id="left">
+			<canvas width="450" height="400" id="field"></canvas>
+		</div>
+		<div id="right">
+			<div class="control">
+				<button id="start">New Game!</button>
+				<button id="pause">Pause</button>
+				<button id="continue">Continue</button>
+			</div>
+			<div class="info">
+				<div class="title">Score:</div>
+				<div class="result" id="score">0</div>
+				<div class="title">Level:</div>
+				<div class="result" id="level">1</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var snake = new Snake({
+				'canvas': document.getElementById('field'),
+				'setting': {
+					startSnakeLength : 3,
+					course           : 'right',
+					startPoint       : {'x':20, 'y':30},
+					delay            : 100,
+					snakeColor       : '#333333',
+					foodColor        : '#C4F2CD',
+					onEatCount       : 3,
+					snakeSize        : 10,
+					foodsLength      : 3,
+					startScore       : 0,
+					startLevel       : 1,
+					showInfo         : true,
+					levelDom         : document.getElementById('level'),
+					levelCount       : 10,
+					scoreDom         : document.getElementById('score'),
+					gameOverText     : 'Game over!\nDo you want restart this Game?'
+				}
+			});
+			Event.add(document.getElementById('start'), 'click', function() {
+				snake.pause();
+				snake.restart();
+			});
+			Event.add(document.getElementById('pause'), 'click', snake.pause.bind(snake));
+			Event.add(document.getElementById('continue'), 'click', function() {
+				if(snake.stop) snake.play();
+			});
+		</script>
+	</body>
+</html>
