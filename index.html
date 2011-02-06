@@ -3,6 +3,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title>Snake Game</title>
+		<!--[if IE]>
+			<script type="text/javascript" src="excanvas.js"></script>
+		<![endif]-->
 		<script type="text/javascript" src="Event.js"></script>
         <script type="text/javascript" src="Snake.js"></script>
 	</head>
@@ -64,18 +67,18 @@
 				'setting': {
 					startSnakeLength : 3,
 					course           : 'right',
-					startPoint       : {'x':20, 'y':30},
+					startPoint       : {'x':20, 'y':20},
 					delay            : 100,
 					snakeColor       : '#333333',
 					foodColor        : '#C4F2CD',
 					onEatCount       : 3,
 					snakeSize        : 10,
-					foodsLength      : 3,
+					foodsLength      : 5,
 					startScore       : 0,
 					startLevel       : 1,
 					showInfo         : true,
 					levelDom         : document.getElementById('level'),
-					levelCount       : 10,
+					levelCount       : 20,
 					scoreDom         : document.getElementById('score'),
 					gameOverText     : 'Game over!\nDo you want restart this Game?'
 				}

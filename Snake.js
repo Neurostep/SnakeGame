@@ -9,11 +9,11 @@
 	
 	Function.prototype.bind = function(bind){
 		var self = this,
-			args = (arguments.length > 1) ? Array.slice(arguments, 1) : null;
+			args = (arguments.length > 1) ? Array.prototype.slice.call(arguments, 1) : null;
 		
 		return function(){
 			if (!args && !arguments.length) return self.call(bind);
-			if (args && arguments.length) return self.apply(bind, args.concat(Array.from(arguments)));
+			if (args && arguments.length) return self.apply(bind, args.concat(Array.prototype.slice.call(arguments)));
 			return self.apply(bind, args || arguments);
 		};
 	}
@@ -45,7 +45,7 @@
 			delete this.stop;
 			this.draw();
 			this.play();
-			this.drawFoods(this.setting.foodsLength);
+			setTimeout(this.drawFoods.bind(this, [this.setting.foodsLength]), this.setting.delay*this.snakeLength/(this.level || 1));
 		},
 		
 		pause: function() {
@@ -74,8 +74,8 @@
 				this.score += this.setting.onEatCount;
 				level = parseInt(this.score/(this.setting.levelCount*this.setting.onEatCount)) + 1;
 				if(this.setting.showInfo) this.onEatHandler(level);
-				this.drawFoods(1);
 				this.snakeLength += this.setting.onEatCount;
+				setTimeout(this.drawFoods.bind(this, [1]), this.setting.delay*this.setting.onEatCount/(this.level || 1));
 			}
 		},
 		
@@ -95,8 +95,10 @@
 			for(var i=0, l=len; i<l; i++) {
 				var x = Math.floor(Math.random()*(this.canvas.width/this.setting.snakeSize))*this.setting.snakeSize,
 					y = Math.floor(Math.random()*(this.canvas.height/this.setting.snakeSize))*this.setting.snakeSize;
-				if(this.current.x == x) x+=this.setting.snakeSize;
-				if(this.current.y == y) y+=this.setting.snakeSize;
+				if(this.snake.some(function(elem) {return elem[0]==x && elem[1]==y})) {
+					((this.canvas.width - x) >= this.setting.snakeSize) ? x+=this.setting.snakeSize : x-=this.setting.snakeSize;
+					((this.canvas.height - y) >= this.setting.snakeSize) ? y+=this.setting.snakeSize : y-=this.setting.snakeSize;
+				}
 				var index = this.foodsPoint.push([x, y]);
 				with(this.ctx) {
 					fillStyle = this.setting.foodColor;
