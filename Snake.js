@@ -1,4 +1,4 @@
-(function() {
+	(function() {
 
 	Array.prototype.some = function(fn, ctx) {
 		for(var i = 0, l = this.length; i<l; i++) {
