@@ -1,4 +1,4 @@
-	(function() {
+(function() {
 
 	Array.prototype.some = function(fn, ctx) {
 		for(var i = 0, l = this.length; i<l; i++) {
@@ -6,6 +6,14 @@
 		}
 		return false;
 	}
+	
+	Array.prototype.filter = function(fn, ctx){
+		var results = [];
+		for (var i = 0, l = this.length; i < l; i++){
+			if ((i in this) && fn.call(ctx, this[i], i, this)) results.push(this[i]);
+		}
+		return results;
+	},
 	
 	Function.prototype.bind = function(bind){
 		var self = this,
@@ -18,10 +26,22 @@
 		};
 	}
 	
+	var NodesToArray = function(item) {
+			var i = item.length, array = new Array(i);
+			while (i--) array[i] = item[i];
+			return array;
+		},
+		
+		IECanvas = function() {
+			return document.createElement('canvas').getContext;
+		};
+	
 	var Snake = this.Snake = function(config) {
 	
 		this.config = config || {};
 		this.canvas = config.canvas;
+		this.noCanvas = !IECanvas();
+		if(this.noCanvas) G_vmlCanvasManager.initElement(this.canvas);
 		this.ctx = config.canvas.getContext('2d');
 		this.setting = this.config.setting;
 		this.initEvents();
@@ -38,6 +58,7 @@
 			};
 			this.course = this.setting.course;
 			this.snake = [];
+			this.snakeVml = [];
 			this.foodsPoint = [];
 			this.score = this.setting.startScore;
 			this.level = this.setting.startLevel;
@@ -54,6 +75,7 @@
 		},
 		
 		draw: function() {
+			this.ctx.save();
 			if(this.snake.some(this.eatItself, this) || this.wrongWay()) {
 				this.gameOver();
 				return;
@@ -61,7 +83,12 @@
 			this.snake.push([this.current.x, this.current.y]);
 			if(this.snake.length > this.snakeLength) {
 				var remove = this.snake.shift();
-				this.ctx.clearRect(remove[0], remove[1], this.setting.snakeSize, this.setting.snakeSize);
+				if(!this.noCanvas) {
+					this.ctx.clearRect(remove[0], remove[1], this.setting.snakeSize, this.setting.snakeSize);
+				}else{
+					var nodes = NodesToArray(this.ctx.element_.childNodes).filter(function(el) {return this.setting.snakeColor.indexOf(String(el.childNodes[0].color)) > -1}, this);
+					nodes[0].removeNode(true);
+				}
 			}
 			with(this.ctx) {
 				fillStyle = this.setting.snakeColor;
@@ -71,6 +98,10 @@
 			if(eat) {
 				var level;
 				this.foodsPoint.splice(eat.index, 1);
+				if(this.noCanvas) {
+					var some = NodesToArray(this.ctx.element_.childNodes).filter(function(el) {return String(el.childNodes[0].color).toUpperCase() == this.setting.foodColor}, this);
+					some[eat.index].removeNode(true);
+				}
 				this.score += this.setting.onEatCount;
 				level = parseInt(this.score/(this.setting.levelCount*this.setting.onEatCount)) + 1;
 				if(this.setting.showInfo) this.onEatHandler(level);
